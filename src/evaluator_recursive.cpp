@@ -2,3 +2,7 @@
 
 // a compléter avec une définition récursive de la fonction evalue
 // qui n'utilise pas de pile
+
+int evalue( std::string const& expression ) {
+
+}
