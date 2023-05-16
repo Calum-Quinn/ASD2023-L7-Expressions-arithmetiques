@@ -3,6 +3,8 @@
 #include <cctype>
 #include <string>
 
+#include <iostream>
+
 using namespace std;
 
 using opData = char;
@@ -15,28 +17,66 @@ bool estOperateur(const opData c) {
    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
 }
 
+valData effectuer (valData val1, opData op, valData val2) {
+   switch (op) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/': return val1 / val2;
+      case '%': return val1 % val2;
+   }
+}
+
 int evalue(string const& expression ) {
 
    stack<opData> operateurs;
    stack<valData> valeurs;
+   string valActuel;
 
-   for (const opData& i : expression) {
+   for (const char& i : expression) {
       if (estOperateur(i)) {
+         if (!valActuel.empty()) {
+            valeurs.push(stoi(valActuel));
+            valActuel = "";
+         }
          operateurs.push(i);
       }
       else if (isdigit(i)) {
-         valeurs.push(i);
+//         //On fait - '0' pour utiliser la valeur représentée par i
+//         valeurs.push(i-'0');
+         valActuel += i;
       }
       else if (i == ')') {
-         string expr = to_string(valeurs.top()) + to_string(operateurs.top());
-         valeurs.pop();
-         operateurs.pop();
-         expr += to_string(valeurs.top());
-         valeurs.push(evalue(expr));
-      }
+         if (!valActuel.empty()) {
+            valeurs.push(stoi(valActuel));
+            valActuel = "";
+         }
 
-      return valeurs.top();
+         //Contrôle s'il y a deux valeurs
+         if (valeurs.size() <= 1) {
+            throw bad_expression();
+         }
+
+         valData val2 = valeurs.top();
+         valeurs.pop();
+         opData op = operateurs.top();
+         operateurs.pop();
+         valData  val1 = valeurs.top();
+         valeurs.pop();
+
+         valeurs.push(effectuer(val1,op,val2));
+      }
    }
+
+   valData temp = valeurs.top();
+   valeurs.pop();
+
+   if (valeurs.size() || operateurs.size()) {
+      throw bad_expression();
+   }
+
+
+   return temp;
 
 //   Dijkstra
 //
