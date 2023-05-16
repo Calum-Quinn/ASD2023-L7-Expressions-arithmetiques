@@ -3,8 +3,6 @@
 #include <cctype>
 #include <string>
 
-#include <iostream>
-
 using namespace std;
 
 using opData = char;
