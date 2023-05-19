@@ -22,6 +22,7 @@ valData effectuer (valData val1, opData op, valData val2) {
       case '*': return val1 * val2;
       case '/': return val1 / val2;
       case '%': return val1 % val2;
+      default : return 0;
    }
 }
 
@@ -40,8 +41,6 @@ int evalue(string const& expression ) {
          operateurs.push(i);
       }
       else if (isdigit(i)) {
-//         //On fait - '0' pour utiliser la valeur représentée par i
-//         valeurs.push(i-'0');
          valActuel += i;
       }
       else if (i == ')') {
@@ -69,7 +68,7 @@ int evalue(string const& expression ) {
    valData temp = valeurs.top();
    valeurs.pop();
 
-   if (valeurs.size() || operateurs.size()) {
+   if (!valeurs.empty() || !operateurs.empty()) {
       throw bad_expression();
    }
 
