@@ -51,8 +51,13 @@ int evalueRecursive(string expression) {
       if (expression[i] == '(') {
          int compteur = 0;
          size_t j = i;
+         //Trouve la bonne parenthèse fermante
          while (compteur != -1) {
             ++j;
+            //Pas de parenthèse fermante
+            if (j >= expression.size()) {
+               throw bad_expression();
+            }
             if (expression[j] == '(') {
                ++compteur;
             } else if (expression[j] == ')') {
@@ -61,16 +66,21 @@ int evalueRecursive(string expression) {
          }
          //On remplace les parenthèses par leur contenu
          expression.replace(i, j + 1, to_string(evalueRecursive(expression.substr(i + 1, j - i - 1))));
-         //On recommence au début pour trouver val1
+         //On recommence au début pour réévaluer val1
          i = -1;
       }
       else if (isdigit(expression[i])) {
          val1 = valeurLongue(expression,i);
       }
-      else if (estOperateur(expression[i])) {
+      else if (estOperateur(expression[i]) && i != 0) {
          operateur = expression[i];
          char apresOp = expression[i + 1];
-         if (isdigit(apresOp)) {
+         //Deux opérateurs à la suite
+         if (estOperateur(apresOp)) {
+            throw bad_expression();
+         }
+         //Opérateur suivi d'un nombre
+         else if (isdigit(apresOp)) {
             val2 = valeurLongue(expression,++i);
             expression.replace(0, chiffresDansNbr(val1) + 1 + chiffresDansNbr(val2), to_string(effectuer(val1,operateur,val2)));
          }
